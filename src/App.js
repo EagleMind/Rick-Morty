@@ -20,6 +20,7 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import CharacterDetails from "./Components/characterDetails";
 import EpisodeDetails from "./Components/episodeDetails";
+import Recommendator from "./Components/recommendator";
 function App() {
   useEffect(() => {
     getAllCharactersService().then((response) => {
@@ -71,31 +72,13 @@ function App() {
     );
     getEpisodes([selectedCharacter]);
     setCharacterDetails(selectedCharacter);
+
     setCharacterListFiltered({});
   }
-  const Recommendation = async (id) => {
-    let recommended = [];
-
-    // // Recommendation
-    // allCharacters.forEach((el) => {
-    //   if (el.species.includes(selectedCharacter.species))
-    //     recommended.push({ name: el.name, id: el.id });
-    // });
-    // setRecommended(recommended);
-
-    // Recommendation
-  };
 
   return (
     <>
       <div className="App">
-        {recommended.map((name) => {
-          return (
-            <a href="#" onClick={() => selectName(name.id)}>
-              {name.name}
-            </a>
-          );
-        })}
         {/* <a href='#' onClick={() => selectName(el[1])}>{el}</a> */}
         <Container>
           <Row xl={8} md={8} lg={8} className="search">
@@ -148,6 +131,11 @@ function App() {
               )}
             </Col>
             <Col sm={6} md={6} lg={6} xl={6}>
+              {characterDetails ? (
+                <Recommendator data={characterDetails}></Recommendator>
+              ) : (
+                ""
+              )}
               {episodes ? (
                 <EpisodeDetails
                   data={episodes}
