@@ -67,10 +67,11 @@ function App() {
       (character) => character.id == id
     );
 
-    // This is the recommendation feature which i didn't have time to refactor
-    let recommended = [];
     getEpisodes([selectedCharacter]);
     setCharacterDetails(selectedCharacter);
+
+    // This is the recommendation feature which i didn't have time to refactor
+    let recommended = [];
     allCharacters.forEach((el) => {
       if (el.species.includes(selectedCharacter.species))
         recommended.push({ name: el.name, id: el.id });
