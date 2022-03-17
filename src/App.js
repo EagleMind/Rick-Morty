@@ -7,9 +7,6 @@ import {
   Row,
   Container,
   Card,
-  Table,
-  Modal,
-  Button,
 } from "react-bootstrap";
 import {
   getCharacterFilteredService,
@@ -21,26 +18,22 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import CharacterDetails from "./Components/characterDetails";
 import EpisodeDetails from "./Components/episodeDetails";
 import Recommendator from "./Components/recommendator";
+
 function App() {
   useEffect(() => {
     getAllCharactersService().then((response) => {
       setAllCharacters(response);
     });
+
     setCharacterDetails();
     setEpisodes();
   }, []);
   const [characterListFiltered, setCharacterListFiltered] = useState([]);
   const [allCharacters, setAllCharacters] = useState([]);
-  const [searchList, setSearchListFiltered] = useState([]);
   const [characterDetails, setCharacterDetails] = useState();
   const [episodes, setEpisodes] = useState([]);
-
   const [recommended, setRecommended] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(true);
 
-  const customSpinConfig = {
-    lines: 10,
-  };
   let epDetails = [];
   async function onChange(text) {
     const keyword = text.target.value;
@@ -50,8 +43,10 @@ function App() {
         setCharacterListFiltered(searchResult);
       } catch (error) {
         setCharacterListFiltered({});
-        alert(error);
+        keyword = "";
       }
+    } else {
+      setCharacterListFiltered({});
     }
   }
   async function getEpisodes(characterDetails) {
@@ -59,96 +54,108 @@ function App() {
       for (let i = 0; i <= el["episode"].length - 1; i++) {
         axios.get(el["episode"][i]).then((res) => {
           epDetails.push(res.data);
-          setIsLoaded(false);
-          setEpisodes(epDetails);
-          setIsLoaded(true);
         });
       }
+      // useState needs a bit to update
+      setTimeout(() => {
+        setEpisodes(epDetails);
+      }, 500);
     });
   }
   function selectName(id) {
     const selectedCharacter = allCharacters.find(
       (character) => character.id == id
     );
+
+    // This is the recommendation feature which i didn't have time to refactor
+    let recommended = [];
     getEpisodes([selectedCharacter]);
     setCharacterDetails(selectedCharacter);
+    allCharacters.forEach((el) => {
+      if (el.species.includes(selectedCharacter.species))
+        recommended.push({ name: el.name, id: el.id });
+    });
+    setRecommended(recommended);
+    // This is the recommendation feature which i didn't have time to refactor
 
     setCharacterListFiltered({});
   }
 
   return (
-    <>
-      <div className="App">
-        {/* <a href='#' onClick={() => selectName(el[1])}>{el}</a> */}
-        <Container>
-          <Row xl={8} md={8} lg={8} className="search">
-            <Col md={5} lg={5} xl={5}>
-              <DropdownButton
-                id="dropdown-basic-button"
-                title="Choose your character"
-              >
-                {allCharacters.map((subject) => (
-                  <Dropdown.Item
-                    key={subject.id}
-                    onClick={() => selectName(subject.id)}
-                  >
-                    {subject.name}
-                  </Dropdown.Item>
-                ))}
-              </DropdownButton>
-            </Col>
-          </Row>
-
-          <Row xl={8} md={8} lg={8} className="search">
-            <Col md={5} lg={5} xl={5}>
-              {" "}
-              <Form.Label>Character's Name</Form.Label>
-              <input list="browsers" type="text" onChange={onChange} />
-              <div className="user-list ">
-                {characterListFiltered.length > 0
-                  ? characterListFiltered.map((character) => (
-                      <li key={character.id}>
-                        <span
-                          className="user-name"
-                          onClick={() => selectName(character.id)}
-                        >
-                          {character.name}
-                        </span>
-                      </li>
-                    ))
-                  : ""}
-              </div>
-            </Col>
-          </Row>
-        </Container>
-        <Container fluid className="d-flex justify-content-center m-5">
+    <Container fluid className="m-5">
+      <Row>
+        <Col sm={5} md={5} lg={5} xl={4}>
           <Row>
-            <Col>
+            <Card>
+              <Card.Header as="h5">Search</Card.Header>
+              <Card.Body>
+                <Card.Title>By list</Card.Title>
+                <DropdownButton
+                  id="dropdown-basic-button"
+                  title="Choose your character"
+                >
+                  {allCharacters.map((subject) => (
+                    <Dropdown.Item
+                      key={subject.id}
+                      onClick={() => selectName(subject.id)}
+                    >
+                      {subject.name}
+                    </Dropdown.Item>
+                  ))}
+                </DropdownButton>
+                <Row>
+                  <Card.Title>By name</Card.Title>
+                </Row>
+                <Row>
+                  <input list="browsers" type="text" onChange={onChange} />
+                </Row>
+                <div>
+                  {characterListFiltered.length > 0
+                    ? characterListFiltered.map((character) => (
+                        <li key={character.id}>
+                          <span onClick={() => selectName(character.id)}>
+                            {character.name}
+                          </span>
+                        </li>
+                      ))
+                    : ""}
+                </div>
+              </Card.Body>
+            </Card>
+            <Card className="mt-3">
+              <Card.Body>
+                <Card.Title>Recommendations</Card.Title>
+                <Card.Text>
+                  {characterDetails ? (
+                    <Recommendator data={recommended}></Recommendator>
+                  ) : (
+                    ""
+                  )}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Row>
+        </Col>
+        <Col sm={8} md={8} lg={8} xl={8}>
+          <Row xl={8} md={8} lg={8}>
+            <Col sm={4} md={4} lg={4} xl={4}>
               {characterDetails ? (
                 <CharacterDetails data={characterDetails}></CharacterDetails>
               ) : (
                 ""
               )}
             </Col>
-            <Col sm={6} md={6} lg={6} xl={6}>
-              {characterDetails ? (
-                <Recommendator data={characterDetails}></Recommendator>
-              ) : (
-                ""
-              )}
+            <Col sm={8} md={8} lg={8} xl={8}>
               {episodes ? (
-                <EpisodeDetails
-                  data={episodes}
-                  loaded={isLoaded}
-                ></EpisodeDetails>
+                <EpisodeDetails data={episodes}></EpisodeDetails>
               ) : (
                 ""
               )}
             </Col>
           </Row>
-        </Container>
-      </div>
-    </>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 

@@ -1,19 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  DropdownButton,
-  Dropdown,
-  Form,
-  Col,
-  Row,
-  Container,
-  Card,
-  Table,
-  Modal,
-  Button,
-} from "react-bootstrap";
+import { Container, Table, Modal, Button, Card } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 
 function EpisodeDetails(episodes) {
+  useEffect(() => {}, [episodes]);
+  // This component requires a custom pagination component and i couldn't make it due to deadline
   const [modalDetails, setModalDetails] = useState({});
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -26,38 +17,40 @@ function EpisodeDetails(episodes) {
 
   return (
     <>
-      <div>
-        {episodes.data.length >= 1 ? (
-          <Table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Episodes Name</th>
-              </tr>
-            </thead>
-            <tbody>
-              {episodes.data.map((el, index) => {
-                return (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{el.name}</td>
-                    <td>
-                      <Button
-                        className="primary"
-                        onClick={() => handleShow(el.id)}
-                      >
-                        Open Details
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
-        ) : (
-          ""
-        )}
-      </div>
+      <Container>
+        <Card>
+          {episodes.data.length >= 1 ? (
+            <Table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Episodes Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {episodes.data.map((el, index) => {
+                  return (
+                    <tr>
+                      <td>{index + 1}</td>
+                      <td>{el.name}</td>
+                      <td>
+                        <Button
+                          className="primary"
+                          onClick={() => handleShow(el.id)}
+                        >
+                          Open Details
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          ) : (
+            ""
+          )}
+        </Card>
+      </Container>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Episode Details</Modal.Title>

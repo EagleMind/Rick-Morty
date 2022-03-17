@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import { Card } from "react-bootstrap";
-import { getCharacterByIdService } from "../../Network/apis";
 const CharacterDetails = (data) => {
   return (
     <Card>

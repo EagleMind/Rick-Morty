@@ -1,16 +1,17 @@
 .App {
   min-height: 100vh;
 }
-
-
-
+body {
+  background-image: url("./assets/images/background.png");
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
-
+li {
+  list-style: none;
+}
 
 .App-link {
   color: #61dafb;
@@ -23,9 +24,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-.search{
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
